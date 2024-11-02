@@ -13,6 +13,7 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 import yaml
+import json
 
 os.environ["MLFLOW_TRACKING_USERNAME"] = "Sharad-18"
 os.environ["MLFLOW_TRACKING_PASSWORD"] = "121f36e6a42036e33a56166ed5d1717b205a86b8"
@@ -120,12 +121,23 @@ def log_confusion_matrix(cm, dataset_name):
     plt.savefig(cm_file_path)
     mlflow.log_artifact(cm_file_path)
     plt.close()
-
+def save_model_info(run_id:str,model_path:str, file_path: str)->None:
+    try:
+        model_info={
+            'run_id':run_id,
+            'model_path':model_path
+        }
+        with open(file_path,'w') as file:
+            json.dump(model_info,file,indent=4)
+        logger.debug('Model info Saved to %s',file_path)
+    except Exception as e:
+        logger.error("Error occured while saving the model info %s",e)
+        raise
 def main():
     mlflow.set_tracking_uri("https://dagshub.com/Sharad-18/Youtube-comment-analysis-Plugin.mlflow")
     
     mlflow.set_experiment("dvc-pipeline")
-    with mlflow.start_run():
+    with mlflow.start_run() as run:
         try:
             # Load parameters from YAML file
             root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
@@ -146,6 +158,11 @@ def main():
 
             # Log model and vectorizer
             mlflow.sklearn.log_model(model, "lgbm_model")
+            
+            arcifact_uri=mlflow.get_artifact_uri()
+            model_path=f"{arcifact_uri}/lgbm_model"
+            save_model_info(run.info.run_id,model_path,'experiment_info.json')
+            
             mlflow.log_artifact(os.path.join(root_dir, 'tfidf_vectorizer.pkl'))
 
             # Load test data
