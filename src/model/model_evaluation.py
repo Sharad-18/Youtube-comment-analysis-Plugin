@@ -1,4 +1,4 @@
-# src/model/model_evaluation.py
+# src/model/model_evaluation
 
 import numpy as np
 import pandas as pd
@@ -159,8 +159,7 @@ def main():
             # Log model and vectorizer
             mlflow.sklearn.log_model(model, "lgbm_model")
             
-            arcifact_uri=mlflow.get_artifact_uri()
-            model_path=f"{arcifact_uri}/lgbm_model"
+            model_path="lgbm_model"
             save_model_info(run.info.run_id,model_path,'experiment_info.json')
             
             mlflow.log_artifact(os.path.join(root_dir, 'tfidf_vectorizer.pkl'))
