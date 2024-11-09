@@ -86,5 +86,5 @@ The **YouTube Comment Analysis Plugin** solves the influencers' pain point by pr
 - Spam detection and handling evolving language trends.
 - Managing model latency and user experience in real-time.
 - Ensuring data privacy and compliance with regulations.
-
+![Sample_Image](src/data/sample.png)
    
